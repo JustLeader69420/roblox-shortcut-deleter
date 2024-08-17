@@ -33,4 +33,4 @@ Yes, I am pissed off at the stupid shortcuts appearing every time. I don't use S
 ### Configuration (optional, if you don't want both shortcuts removed or something)
 
  - I hope you didn't close the folder with the script, I am not helping you search for it again.
- - Open up the script in your favorite editor.
+ - Open up the script in your favorite editor and have fun in the Configuration section.
