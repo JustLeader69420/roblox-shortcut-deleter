@@ -1,21 +1,44 @@
-#        Configuration (:
+#          Configuration (:
 
-# Define the directories and file names to monitor
+# Define the directories and file names to monitor, comment to disable.
+# Make sure the last entry does not have a colon (,) behind it to prevent errors.
 $monitorConfigs = @(
-    @{ Path = "$env:USERPROFILE\Desktop"; Filter = "Shortcut1.lnk" },
-    @{ Path = "$env:USERPROFILE\Desktop"; Filter = "Shortcut2.lnk" }
+    @{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Player.lnk" },
+    @{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Studio.lnk" }
 )
-# The delay, how often the script checks for filesystem changes
-$delay = 5
 
+# The delay in seconds, how often the script checks for the files
+$delay = 1
 
+#Whether or not to log the actions
+$log = 1
 
-
-
+# Define the lock file path - this makes sure only one instance of the script runs
+$lockFilePath = "$env:USERPROFILE\robloxshortcutremover.lock"
 
 # End of Configuration section, proceed at your own risk, I am not helping you with this.
 
 
+
+
+
+# Function to check if another instance is running
+function Check-ForExistingInstance {
+    if (Test-Path $lockFilePath) {
+        $lockFileContent = Get-Content $lockFilePath
+        if ($lockFileContent) {
+            $oldPid = [int]$lockFileContent
+            if (Get-Process -Id $oldPid -ErrorAction SilentlyContinue) {
+                Write-Output "An instance is already running with PID $oldPid. Terminating it..."
+                Stop-Process -Id $oldPid -Force
+                Start-Sleep -Seconds 1 # Give time for the old process to terminate
+            }
+        }
+    }
+    # Create or update the lock file with the current process ID
+    #$pid = $PID
+    $PID | Out-File -FilePath $lockFilePath -Force
+}
 
 # Check if the script is running as a hidden instance
 if ($MyInvocation.Line.Trim() -notmatch '-windowstyle hidden') {
@@ -24,47 +47,38 @@ if ($MyInvocation.Line.Trim() -notmatch '-windowstyle hidden') {
     exit
 }
 
+# Function to clean up the lock file
+function Cleanup-LockFile {
+    if (Test-Path $lockFilePath) {
+        Remove-Item $lockFilePath -Force
+    }
+}
 
-# Create a script block that accepts parameters for the action
-$createAction = {
-    param ($path, $filter)
+# Check for existing instance and manage lock file
+Check-ForExistingInstance
 
-    $action = {
-        param ($source, $eventArgs)
+# Ensure the lock file is cleaned up on exit
+Register-EngineEvent PowerShell.Exiting -Action { Cleanup-LockFile } | Out-Null
 
-        # Extract the filename from the event
-        $fileName = [System.IO.Path]::GetFileName($eventArgs.FullPath)
 
-        # Check if the detected file matches the filter
-        if ($fileName -eq $filter) {
-            Start-Sleep -Seconds 2  # Optional: delay to ensure the file is fully created
-            if (Test-Path $eventArgs.FullPath) {
-                Remove-Item $eventArgs.FullPath
-                Write-Output "File deleted: $fileName at $(Get-Date)"
+# Keep the script running indefinitely
+Write-Output "Script is now running. Press Ctrl+C to stop."
+while ($true) {
+    foreach ($config in $monitorConfigs) {
+        $filePath = Join-Path -Path $config.Path -ChildPath $config.Filter
+        
+        # Check if the file exists
+        if (Test-Path $filePath) {
+            try {
+                # Delete the file
+                Remove-Item $filePath -Force
+                Write-Output "File deleted: $filePath at $(Get-Date)"
+            } catch {
+                Write-Output "Failed to delete file: $filePath. Error: $_"
             }
         }
     }
-
-    return $action
-}
-
-# Create and configure FileSystemWatcher instances
-foreach ($config in $monitorConfigs) {
-    $watcher = New-Object System.IO.FileSystemWatcher
-    $watcher.Path = $config.Path
-    $watcher.Filter = $config.Filter
-    $watcher.NotifyFilter = [System.IO.NotifyFilters]'FileName, LastWrite'
     
-    # Get the action script block with the current configuration
-    $action = $createAction.Invoke($config.Path, $config.Filter)
-    
-    Register-ObjectEvent $watcher "Created" -Action $action
-    Write-Output "Created new watcher, Path: $($config.Path), Filter: $($config.Filter)"
-}
-
-
-
-# Keep the script running indefinitely, fucking the shortcuts in the process
-while ($true) {
+    # Sleep before the next check
     Start-Sleep -Seconds $delay
 }
