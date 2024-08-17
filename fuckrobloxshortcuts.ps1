@@ -11,7 +11,7 @@ $monitorConfigs = @(
 $delay = 5
 
 # If the script should run hidden (0 = false; 1 = true)
-# THIS IS BROKEN, RECOMMENDED DISABLED
+# THIS IS BROKEN, RECOMMENDED DISABLED, use file property instead
 $hidden = 0
 
 # If running multiple instances should be possible (0 = false; 1 = true)
