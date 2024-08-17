@@ -22,7 +22,7 @@ Yes, I am pissed off at the stupid shortcuts appearing every time. I don't use S
 
 ### Get this thing installed
 
- - Download the [https://git.justleader.eu/justleader/roblox-shortcut-deleter/raw/branch/main/fuckrobloxshortcuts.ps1](fuckrobloxshortcuts.ps1) script file, you can read through it if you want, but I don't ship bullshit. (:
+ - Download the [fuckrobloxshortcuts.ps1](https://git.jldr.eu/justleader/roblox-shortcut-deleter/raw/branch/main/fuckrobloxshortcuts.ps1) script file, you can read through it if you want, but I don't ship bullshit. (:
  - Open the Run window, or an explorer window and put "shell:startup" (without the quotation marks, obviously) into the "Open" text box, or the location bar.
    - An explorer window should open at a path like: C:\Users\<username>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
    - Shortcuts may or may not be in here already, don't do anything to them, you might mess something up, or disable some programs from automatically starting (might be something you want though, idk)
