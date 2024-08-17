@@ -10,9 +10,6 @@ $monitorConfigs = @(
 # The delay in seconds, how often the script checks for the files
 $delay = 1
 
-#Whether or not to log the actions
-$log = 1
-
 # Define the lock file path - this makes sure only one instance of the script runs
 $lockFilePath = "$env:USERPROFILE\robloxshortcutremover.lock"
 
