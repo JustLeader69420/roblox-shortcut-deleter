@@ -8,7 +8,13 @@ $monitorConfigs = @(
 )
 
 # The delay in seconds, how often the script checks for the files
-$delay = 1
+$delay = 5
+
+# If the script should run hidden (0 = false; 1 = true)
+$hidden = 0
+
+# If running multiple instances should be possible (0 = false; 1 = true)
+$multipleinstances = 0
 
 # Define the lock file path - this makes sure only one instance of the script runs
 $lockFilePath = "$env:USERPROFILE\robloxshortcutremover.lock"
@@ -28,7 +34,7 @@ function Check-ForExistingInstance {
             if (Get-Process -Id $oldPid -ErrorAction SilentlyContinue) {
                 Write-Output "An instance is already running with PID $oldPid. Terminating it..."
                 Stop-Process -Id $oldPid -Force
-                Start-Sleep -Seconds 1 # Give time for the old process to terminate
+                Start-Sleep -Seconds 5 # Give time for the old process to terminate
             }
         }
     }
@@ -38,10 +44,12 @@ function Check-ForExistingInstance {
 }
 
 # Check if the script is running as a hidden instance
-if ($MyInvocation.Line.Trim() -notmatch '-windowstyle hidden') {
-    # Relaunch the script as hidden
-    Start-Process powershell -ArgumentList '-WindowStyle Hidden -ExecutionPolicy Bypass -File', "`"$PSCommandPath`"" -NoNewWindow
-    exit
+if ($hidden -eq 1) {
+	if ($MyInvocation.Line.Trim() -notmatch '-windowstyle hidden') {
+		# Relaunch the script as hidden
+		Start-Process powershell -ArgumentList '-WindowStyle Hidden -ExecutionPolicy Bypass -File', "`"$PSCommandPath`"" -NoNewWindow
+		exit
+	}
 }
 
 # Function to clean up the lock file
@@ -52,7 +60,7 @@ function Cleanup-LockFile {
 }
 
 # Check for existing instance and manage lock file
-Check-ForExistingInstance
+if (!$multipleinstances -eq 1) {Check-ForExistingInstance}
 
 # Ensure the lock file is cleaned up on exit
 Register-EngineEvent PowerShell.Exiting -Action { Cleanup-LockFile } | Out-Null
@@ -68,7 +76,7 @@ while ($true) {
         if (Test-Path $filePath) {
             try {
                 # Delete the file
-                Remove-Item $filePath -Force
+                Remove-Item "$filePath" -Force
                 Write-Output "File deleted: $filePath at $(Get-Date)"
             } catch {
                 Write-Output "Failed to delete file: $filePath. Error: $_"
