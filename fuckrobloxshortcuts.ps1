@@ -8,11 +8,10 @@ $monitorConfigs = @(
 )
 
 # The delay in seconds, how often the script checks for the files
-$delay = 5
+$delay = 10
 
 # If the script should run hidden (0 = false; 1 = true)
-# THIS IS BROKEN, RECOMMENDED DISABLED, use file property instead
-$hidden = 0
+$hidden = 1
 
 # If running multiple instances should be possible (0 = false; 1 = true)
 $multipleinstances = 0
@@ -26,6 +25,43 @@ $lockFilePath = "$env:USERPROFILE\robloxshortcutremover.lock"
 
 
 
+
+
+Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+
+public class API {
+
+    public enum SW : int {
+        Hide            = 0,
+        Normal          = 1,
+        ShowMinimized   = 2,
+        Maximize        = 3,
+        ShowNoActivate  = 4,
+        Show            = 5,
+        Minimize        = 6,
+        ShowMinNoActive = 7,
+        ShowNA          = 8,
+        Restore         = 9,
+        Showdefault     = 10,
+        Forceminimize   = 11
+    }
+
+    [DllImport("user32.dll")]
+    public static extern int ShowWindow(IntPtr hwnd, SW nCmdShow);
+}
+'@
+# Hide the script
+# useful: https://superuser.com/questions/1740074/looking-to-hide-a-window-by-sending-it-to-background-or-detatching-it-from-a
+if ($hidden -eq 1) {
+Write-Output "Hiding..."
+$ThisWindow = [System.Diagnostics.Process]::GetCurrentProcess().MainwindowHandle
+[API]::ShowWindow($ThisWindow,'Hide')
+# to unhide: [API]::ShowWindow($ThisWindow,'Show')
+}
+
+
 # Function to check if another instance is running
 function Check-ForExistingInstance {
     if (Test-Path $lockFilePath) {
@@ -35,22 +71,13 @@ function Check-ForExistingInstance {
             if (Get-Process -Id $oldPid -ErrorAction SilentlyContinue) {
                 Write-Output "An instance is already running with PID $oldPid. Terminating it..."
                 Stop-Process -Id $oldPid -Force
-                Start-Sleep -Seconds 5 # Give time for the old process to terminate
+                Start-Sleep -Seconds 2 # Give time for the old process to terminate
             }
         }
     }
     # Create or update the lock file with the current process ID
     #$pid = $PID
     $PID | Out-File -FilePath $lockFilePath -Force
-}
-
-# Check if the script is running as a hidden instance
-if ($hidden -eq 1) {
-	if ($MyInvocation.Line.Trim() -notmatch '-windowstyle hidden') {
-		# Relaunch the script as hidden
-		Start-Process powershell -ArgumentList '-WindowStyle Hidden -ExecutionPolicy Bypass -File', "`"$PSCommandPath`"" -NoNewWindow
-		exit
-	}
 }
 
 # Function to clean up the lock file
