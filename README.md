@@ -29,8 +29,10 @@ Yes, I am pissed off at the stupid shortcuts appearing every time. I don't use S
  - put the script into this folder, the script will run on startup and watch for file changes in your Desktop folder
  - If you have a weird desktop folder or for example only want to remove one shortcut, go to the configuration section.
    - Don't open up issues to ask for moving the shortcut or some other crap, use chatgpt and try doing something for once instead.
+ - By default this script removes all Roblox desktop shortcuts. If you want to remove them from the start menu too, or only delete some of them, check the configuration out. The cleaning happens every minute by default, again, changeable in configuraiton.
+ - Enjoy the de-cluttered folders. (:
 
 ### Configuration (optional, if you don't want both shortcuts removed or something)
 
  - I hope you didn't close the folder with the script, I am not helping you search for it again.
- - Open up the script in your favorite editor and have fun in the Configuration section.
+ - Open up the script in your favorite editor and have fun in the Configuration section at the top.
