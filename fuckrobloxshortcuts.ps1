@@ -4,9 +4,9 @@
 # Make sure the last entry does not have a colon (,) behind it to prevent errors.
 $monitorConfigs = @(
 	@{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Player.lnk" },
-	@{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Studio.lnk" },
+	@{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Studio.lnk" }
 #	@{ Path = "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Roblox"; Filter = "Roblox Player.lnk" },
-#	@{ Path = "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Roblox"; Filter = "Roblox Studio.lnk" }
+#	@{ Path = "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Roblox"; Filter = "Roblox Studio.lnk" },
 )
 
 # The delay in seconds, how often the script checks for the files
