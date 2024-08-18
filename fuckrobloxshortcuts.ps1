@@ -1,7 +1,7 @@
 #          Configuration (:
 
 # Define the directories and file names to monitor, comment to disable.
-# Make sure the last entry does not have a colon (,) behind it to prevent errors.
+# Make sure the last entry does not have a colon (,) behind it to prevent errors. All other lines should have a colon.
 $monitorConfigs = @(
 	@{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Player.lnk" },
 	@{ Path = "$env:USERPROFILE\Desktop"; Filter = "Roblox Studio.lnk" }
@@ -74,17 +74,23 @@ function Check-ForExistingInstance {
                 Write-Output "$(Get-Date) | An instance is already running with PID $oldPid. Terminating it..."
                 try {
                 Stop-Process -Id $oldPid -Force
-                Write-Output "$(Get-Date) | Instance with PID $oldPid was terminated. Waiting 2 seconds to ensure full termination."
                 } catch {
                 Write-Output "$(Get-Date) | Failed to terminate old instance ($oldPid). Error: $_"
                 }
+				Write-Output "$(Get-Date) | Instance with PID $oldPid was terminated. Waiting 2 seconds to ensure full termination."
                 Start-Sleep -Seconds 2 # Give time for the old process to terminate
             }
         }
     }
     # Create or update the lock file with the current process ID
     #$pid = $PID
+	Write-Output "$(Get-Date) | Creating lockfile."
+	try {
     $PID | Out-File -FilePath $lockFilePath -Force
+	} catch {
+	Write-Output "$(Get-Date) | Failed to create lockfile. Error: $_"
+	}
+	Write-Output "$(Get-Date) | Created lockfile."
 }
 
 # Function to clean up the lock file
@@ -92,10 +98,10 @@ function Cleanup-LockFile {
     if (Test-Path $lockFilePath) {
         try {
         Remove-Item $lockFilePath -Force # Delete lockfile
-        Write-Output "$(Get-Date) | Deleted lockfile"
         } catch {
         Write-Output "$(Get-Date) | Failed to delete lockfile: $filePath. Error: $_"
         }
+		Write-Output "$(Get-Date) | Deleted lockfile"
     }
 }
 
@@ -117,10 +123,10 @@ while ($true) {
             try {
                 # Delete the file
                 Remove-Item "$filePath" -Force
-                Write-Output "$(Get-Date) | File deleted: $filePath"
             } catch {
                 Write-Output "$(Get-Date) | Failed to delete file: $filePath. Error: $_"
             }
+			Write-Output "$(Get-Date) | File deleted: $filePath"
         }
     }
     
