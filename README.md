@@ -17,7 +17,7 @@ Yes, I am pissed off at the stupid shortcuts appearing every time. I don't use S
 
 ### Prerequisite
 
- - Have Window$. I have Window$ 10, didn't test on anything else, may or may not work, no warranty or support of any kind will be provided here, ask chatgpt if needed.
+ - Have Window$. I have Windows 10, didn't test on anything else, may or may not work, no warranty or support of any kind will be provided here, ask chatgpt if needed.
 
 
 ### Get this thing installed
